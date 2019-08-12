@@ -1,23 +1,33 @@
 #!/bin/bash
 
+MERGE=false
+DIRS=("C:/DPPSource/dpp-platform-base" "C:/DPPSource/dpp8" "C:/DPPSource/dpp7")
+
 pull() {
     REPODIR=$1
-    cd ${REPODIR} &&
-        repo=$(git remote show -n origin | grep Push | cut -d: -f2- | cut -d/ -f5-) &&
-        printf "\n>${repo}\n" &&
-        br=$(git br | grep \* | cut -d ' ' -f2) &&
-        git stash &&
-        git co master &&
-        git pull
-    git co ${br} &&
-        git stash apply
+    cd ${REPODIR}
+    REPO=$(git remote show -n origin | grep Push | cut -d: -f2- | cut -d/ -f5-) &&
+        printf "\n>${REPO}\n"
+    git pull origin master &&
+        if $MERGE; then
+            git merge master
+        fi
 }
 
-dirs=("C:/DPPSource/dpp-platform-base" "C:/DPPSource/dpp8" "C:/DPPSource/dpp7")
+for arg in "$@"; do
+    case $arg in
+    -m | --merge)
+        MERGE=true
+        shift
+        ;;
+    *)
+        shift
+        ;;
+    esac
+done
 
-for i in "${dirs[@]}"; do
+for i in "${DIRS[@]}"; do
     pull $i
 done
 
 printf "\n"
-read -n 1 -s -r -p "Press any key to continue..."
