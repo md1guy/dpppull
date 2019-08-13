@@ -1,23 +1,30 @@
 #!/bin/bash
 
 MERGE=false
+STASH=true
 DIRS=("C:/DPPSource/dpp-platform-base" "C:/DPPSource/dpp8" "C:/DPPSource/dpp7")
 
 pull() {
     REPODIR=$1
     cd ${REPODIR}
-    # BRANCH=$(git br | grep \* | cut -d ' ' -f2)
+    # BRANCH=$(git branch | grep \* | cut -d ' ' -f2)
     BRANCH=$(git rev-parse --abbrev-ref HEAD)
     REPO=$(git remote show -n origin | grep Push | cut -d: -f2- | cut -d/ -f5-) &&
         printf "\n>${REPO}\n"
     if [ "$BRANCH" != master ]; then
-        git stash &&
-            git co master -q &&
+
+        if $STASH; then
+            git stash
+        fi &&
+            git checkout master -q &&
             printf "Switched to master.\n"
         git pull &&
-            git co ${BRANCH} -q &&
+            git checkout ${BRANCH} -q &&
             printf "Switched back to $BRANCH.\n"
-        git stash pop &&
+
+        if $STASH; then
+            git stash pop
+        fi &&
             if $MERGE; then
                 git merge master
             fi
@@ -30,6 +37,10 @@ for arg in "$@"; do
     case $arg in
     -m | --merge)
         MERGE=true
+        shift
+        ;;
+    -ns | --nostash)
+        STASH=false
         shift
         ;;
     *)
