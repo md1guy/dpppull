@@ -1,8 +1,9 @@
 #!/bin/bash
 
+DIRS=("C:/DPPSource/dpp-platform-base" "C:/DPPSource/dpp8" "C:/DPPSource/dpp7")
+
 MERGE=false
 STASH=true
-DIRS=("C:/DPPSource/dpp-platform-base" "C:/DPPSource/dpp8" "C:/DPPSource/dpp7")
 
 pull() {
     REPODIR=$1
