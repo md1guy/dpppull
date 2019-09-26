@@ -25,10 +25,11 @@ pull() {
 
         if $STASH; then
             git stash pop
-        fi &&
-            if $MERGE; then
-                git merge master
-            fi
+        fi
+
+        if $MERGE; then
+            git merge master
+        fi
     else
         git pull
     fi
